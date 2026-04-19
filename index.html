@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Management System</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0d;
+    --surface: #161616;
+    --surface2: #1e1e1e;
+    --border: #2a2a2a;
+    --accent: #c8f135;
+    --accent-dim: #a8d020;
+    --text: #f0f0f0;
+    --muted: #888;
+    --danger: #ff4d4d;
+    --danger-dim: #c73b3b;
+    --info: #4da6ff;
+    --success: #4dff91;
+    --warn: #ffb84d;
+    --radius: 10px;
+    --font: 'DM Sans', sans-serif;
+    --mono: 'Space Mono', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    min-height: 100vh;
+  }
+
+  /* TOPBAR */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 32px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo-icon {
+    width: 34px;
+    height: 34px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .logo-icon svg { width: 18px; height: 18px; }
+
+  .logo-text {
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.3px;
+  }
+
+  .logo-text span { color: var(--accent); }
+
+  .topbar-actions { display: flex; gap: 10px; }
+
+  .btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #0d0d0d;
+    border-color: var(--accent);
+  }
+
+  .btn-primary:hover { background: var(--accent-dim); border-color: var(--accent-dim); }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--muted);
+    border-color: var(--border);
+  }
+
+  .btn-ghost:hover { color: var(--text); border-color: #444; background: var(--surface2); }
+
+  .btn-danger { background: transparent; color: var(--danger); border-color: var(--danger); }
+  .btn-danger:hover { background: var(--danger); color: white; }
+
+  .btn-sm { padding: 5px 10px; font-size: 12px; border-radius: 6px; }
+
+  /* LAYOUT */
+  .container { max-width: 1200px; margin: 0 auto; padding: 28px 32px; }
+
+  /* STATS */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 22px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .stat-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .stat-icon.green { background: rgba(77, 255, 145, 0.1); }
+  .stat-icon.blue { background: rgba(77, 166, 255, 0.1); }
+  .stat-icon.yellow { background: rgba(255, 184, 77, 0.1); }
+
+  .stat-label { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+  .stat-value { font-family: var(--mono); font-size: 22px; font-weight: 700; color: var(--text); }
+
+  /* TOOLBAR */
+  .toolbar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .search-wrap {
+    flex: 1;
+    min-width: 200px;
+    position: relative;
+  }
+
+  .search-wrap svg {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+  }
+
+  .search-input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 9px 12px 9px 36px;
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .search-input:focus { border-color: var(--accent); }
+  .search-input::placeholder { color: var(--muted); }
+
+  select.filter-select {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 9px 12px;
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 13px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  select.filter-select:focus { border-color: var(--accent); }
+
+  /* TABLE */
+  .table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  thead tr {
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+
+  th {
+    padding: 12px 16px;
+    text-align: left;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    font-family: var(--mono);
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+
+  tbody tr:last-child td { border-bottom: none; }
+
+  tbody tr:hover { background: var(--surface2); }
+
+  .roll-badge {
+    font-family: var(--mono);
+    font-size: 11px;
+    background: rgba(200, 241, 53, 0.1);
+    color: var(--accent);
+    padding: 3px 8px;
+    border-radius: 5px;
+    border: 1px solid rgba(200, 241, 53, 0.2);
+  }
+
+  .dept-badge {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 5px;
+    font-weight: 500;
+  }
+
+  .dept-cs { background: rgba(77, 166, 255, 0.1); color: var(--info); border: 1px solid rgba(77,166,255,0.2); }
+  .dept-ec { background: rgba(255, 184, 77, 0.1); color: var(--warn); border: 1px solid rgba(255,184,77,0.2); }
+  .dept-me { background: rgba(255, 77, 77, 0.1); color: var(--danger); border: 1px solid rgba(255,77,77,0.2); }
+  .dept-ce { background: rgba(77, 255, 145, 0.1); color: var(--success); border: 1px solid rgba(77,255,145,0.2); }
+  .dept-other { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
+
+  .cgpa-val { font-family: var(--mono); font-weight: 700; }
+  .cgpa-high { color: var(--success); }
+  .cgpa-mid { color: var(--warn); }
+  .cgpa-low { color: var(--danger); }
+
+  .year-dot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 600;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  .actions { display: flex; gap: 6px; }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+  }
+
+  .empty-state svg { opacity: 0.3; margin-bottom: 12px; }
+  .empty-state p { font-size: 14px; }
+
+  /* MODAL */
+  .overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+
+  .overlay.active { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px;
+    width: 100%;
+    max-width: 480px;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.2s ease;
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  .modal-title {
+    font-family: var(--mono);
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .modal-close {
+    cursor: pointer;
+    color: var(--muted);
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: transparent;
+    transition: all 0.15s;
+  }
+
+  .modal-close:hover { color: var(--text); border-color: #444; }
+
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-grid .full { grid-column: 1 / -1; }
+
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+
+  .form-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--muted);
+    font-family: var(--mono);
+  }
+
+  .form-input {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 9px 12px;
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .form-input:focus { border-color: var(--accent); }
+  .form-input::placeholder { color: var(--muted); }
+
+  .form-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* TOAST */
+  .toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .toast {
+    padding: 12px 18px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    animation: toastIn 0.25s ease;
+    border: 1px solid;
+    max-width: 300px;
+  }
+
+  @keyframes toastIn {
+    from { transform: translateX(20px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+
+  .toast.success { background: rgba(77,255,145,0.1); border-color: rgba(77,255,145,0.3); color: var(--success); }
+  .toast.error { background: rgba(255,77,77,0.1); border-color: rgba(255,77,77,0.3); color: var(--danger); }
+
+  /* CONFIRM MODAL */
+  .confirm-modal { max-width: 360px; text-align: center; }
+  .confirm-modal .icon { font-size: 36px; margin-bottom: 12px; }
+  .confirm-modal h3 { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+  .confirm-modal p { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+
+  .loading { display: flex; gap: 4px; align-items: center; justify-content: center; padding: 40px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: bounce 1.2s infinite; }
+  .dot:nth-child(2) { animation-delay: 0.2s; }
+  .dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes bounce { 0%,80%,100% { transform: scale(0.6); opacity: 0.4; } 40% { transform: scale(1); opacity: 1; } }
+
+  @media (max-width: 640px) {
+    .container { padding: 16px; }
+    .topbar { padding: 14px 16px; }
+    .stats-row { grid-template-columns: 1fr; }
+    .form-grid { grid-template-columns: 1fr; }
+    .form-grid .full { grid-column: 1; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="6" height="6" rx="1.5" fill="#0d0d0d"/><rect x="10" y="2" width="6" height="6" rx="1.5" fill="#0d0d0d"/><rect x="2" y="10" width="6" height="6" rx="1.5" fill="#0d0d0d"/><rect x="10" y="10" width="6" height="6" rx="1.5" fill="#0d0d0d"/></svg>
+    </div>
+    <div class="logo-text">STUDENT<span>_</span>DB</div>
+  </div>
+  <div class="topbar-actions">
+    <button class="btn btn-primary" onclick="openAddModal()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Student
+    </button>
+  </div>
+</div>
+
+<div class="container">
+  <div class="stats-row" id="statsRow">
+    <div class="stat-card">
+      <div class="stat-icon green">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4dff91" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <div>
+        <div class="stat-label">Total Students</div>
+        <div class="stat-value" id="statTotal">—</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon blue">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4da6ff" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+      </div>
+      <div>
+        <div class="stat-label">Departments</div>
+        <div class="stat-value" id="statDepts">—</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon yellow">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffb84d" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </div>
+      <div>
+        <div class="stat-label">Avg CGPA</div>
+        <div class="stat-value" id="statCgpa">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-wrap">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" class="search-input" id="searchInput" placeholder="Search by name, roll no, or email..." oninput="loadStudents()">
+    </div>
+    <select class="filter-select" id="deptFilter" onchange="loadStudents()">
+      <option value="">All Departments</option>
+      <option value="Computer Science">Computer Science</option>
+      <option value="Electronics">Electronics</option>
+      <option value="Mechanical">Mechanical</option>
+      <option value="Civil">Civil</option>
+      <option value="Information Technology">Information Technology</option>
+      <option value="Electrical">Electrical</option>
+    </select>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Student</th>
+          <th>Roll No</th>
+          <th>Department</th>
+          <th>Year</th>
+          <th>CGPA</th>
+          <th>Contact</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="studentTable">
+        <tr><td colspan="8"><div class="loading"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ADD / EDIT MODAL -->
+<div class="overlay" id="formOverlay" onclick="closeOnBackdrop(event, 'formOverlay')">
+  <div class="modal">
+    <div class="modal-title">
+      <span id="modalTitle">Add Student</span>
+      <button class="modal-close" onclick="closeModal('formOverlay')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <input type="hidden" id="editId">
+    <div class="form-grid">
+      <div class="form-group full">
+        <label class="form-label">Full Name *</label>
+        <input type="text" class="form-input" id="f_name" placeholder="e.g. Aravind Kumar">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Roll Number *</label>
+        <input type="text" class="form-input" id="f_roll" placeholder="e.g. 21CS001">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Year *</label>
+        <select class="form-input" id="f_year">
+          <option value="1">1st Year</option>
+          <option value="2">2nd Year</option>
+          <option value="3">3rd Year</option>
+          <option value="4">4th Year</option>
+        </select>
+      </div>
+      <div class="form-group full">
+        <label class="form-label">Department *</label>
+        <select class="form-input" id="f_dept">
+          <option value="Computer Science">Computer Science</option>
+          <option value="Electronics">Electronics</option>
+          <option value="Mechanical">Mechanical</option>
+          <option value="Civil">Civil</option>
+          <option value="Information Technology">Information Technology</option>
+          <option value="Electrical">Electrical</option>
+        </select>
+      </div>
+      <div class="form-group full">
+        <label class="form-label">Email *</label>
+        <input type="email" class="form-input" id="f_email" placeholder="student@college.edu">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Phone</label>
+        <input type="text" class="form-input" id="f_phone" placeholder="10-digit number">
+      </div>
+      <div class="form-group">
+        <label class="form-label">CGPA</label>
+        <input type="number" class="form-input" id="f_cgpa" placeholder="e.g. 8.5" min="0" max="10" step="0.01">
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-ghost" onclick="closeModal('formOverlay')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitForm()">Save Student</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM DELETE MODAL -->
+<div class="overlay" id="deleteOverlay" onclick="closeOnBackdrop(event, 'deleteOverlay')">
+  <div class="modal confirm-modal">
+    <div class="icon">🗑️</div>
+    <h3>Delete Student?</h3>
+    <p>This will permanently remove <strong id="deleteNameLabel"></strong> from the database. This action cannot be undone.</p>
+    <div style="display:flex; gap:10px; justify-content:center;">
+      <button class="btn btn-ghost" onclick="closeModal('deleteOverlay')">Cancel</button>
+      <button class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+  let deleteTargetId = null;
+
+  function getDeptClass(dept) {
+    const map = { 'Computer Science': 'dept-cs', 'Electronics': 'dept-ec', 'Mechanical': 'dept-me', 'Civil': 'dept-ce', 'Information Technology': 'dept-cs', 'Electrical': 'dept-ec' };
+    return map[dept] || 'dept-other';
+  }
+
+  function getCgpaClass(cgpa) {
+    if (cgpa >= 8.5) return 'cgpa-high';
+    if (cgpa >= 6.5) return 'cgpa-mid';
+    return 'cgpa-low';
+  }
+
+  function initials(name) {
+    return name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+  }
+
+  async function loadStats() {
+    const res = await fetch('/api/stats');
+    const data = await res.json();
+    document.getElementById('statTotal').textContent = data.total;
+    document.getElementById('statDepts').textContent = data.departments;
+    document.getElementById('statCgpa').textContent = data.avg_cgpa || '—';
+  }
+
+  async function loadStudents() {
+    const search = document.getElementById('searchInput').value;
+    const dept = document.getElementById('deptFilter').value;
+    const params = new URLSearchParams({ search, department: dept });
+    const res = await fetch(`/api/students?${params}`);
+    const students = await res.json();
+    const tbody = document.getElementById('studentTable');
+    if (students.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><p>No students found</p></div></td></tr>`;
+      return;
+    }
+    tbody.innerHTML = students.map((s, i) => `
+      <tr>
+        <td style="color:var(--muted);font-family:var(--mono);font-size:12px;">${String(i+1).padStart(2,'0')}</td>
+        <td>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:32px;height:32px;border-radius:50%;background:rgba(200,241,53,0.15);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--accent);flex-shrink:0;">${initials(s.name)}</div>
+            <div>
+              <div style="font-weight:500;font-size:13px;">${s.name}</div>
+              <div style="font-size:11px;color:var(--muted);">${s.email}</div>
+            </div>
+          </div>
+        </td>
+        <td><span class="roll-badge">${s.roll_no}</span></td>
+        <td><span class="dept-badge ${getDeptClass(s.department)}">${s.department}</span></td>
+        <td><span class="year-dot">${s.year}</span></td>
+        <td><span class="cgpa-val ${getCgpaClass(s.cgpa)}">${s.cgpa ? s.cgpa.toFixed(1) : '—'}</span></td>
+        <td style="color:var(--muted);font-size:12px;">${s.phone || '—'}</td>
+        <td>
+          <div class="actions">
+            <button class="btn btn-ghost btn-sm" onclick="openEditModal(${s.id})">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              Edit
+            </button>
+            <button class="btn btn-danger btn-sm" onclick="openDeleteModal(${s.id}, '${s.name.replace(/'/g, "\\'")}')">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  function openAddModal() {
+    document.getElementById('modalTitle').textContent = 'Add Student';
+    document.getElementById('editId').value = '';
+    ['name','roll','year','dept','email','phone','cgpa'].forEach(f => {
+      const el = document.getElementById('f_' + f);
+      if (el) el.value = f === 'year' ? '1' : (f === 'dept' ? 'Computer Science' : '');
+    });
+    document.getElementById('formOverlay').classList.add('active');
+  }
+
+  async function openEditModal(id) {
+    const res = await fetch(`/api/students/${id}`);
+    const s = await res.json();
+    document.getElementById('modalTitle').textContent = 'Edit Student';
+    document.getElementById('editId').value = s.id;
+    document.getElementById('f_name').value = s.name;
+    document.getElementById('f_roll').value = s.roll_no;
+    document.getElementById('f_year').value = s.year;
+    document.getElementById('f_dept').value = s.department;
+    document.getElementById('f_email').value = s.email;
+    document.getElementById('f_phone').value = s.phone || '';
+    document.getElementById('f_cgpa').value = s.cgpa || '';
+    document.getElementById('formOverlay').classList.add('active');
+  }
+
+  async function submitForm() {
+    const id = document.getElementById('editId').value;
+    const payload = {
+      name: document.getElementById('f_name').value.trim(),
+      roll_no: document.getElementById('f_roll').value.trim(),
+      department: document.getElementById('f_dept').value,
+      year: parseInt(document.getElementById('f_year').value),
+      email: document.getElementById('f_email').value.trim(),
+      phone: document.getElementById('f_phone').value.trim(),
+      cgpa: parseFloat(document.getElementById('f_cgpa').value) || 0,
+    };
+    const url = id ? `/api/students/${id}` : '/api/students';
+    const method = id ? 'PUT' : 'POST';
+    const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    const data = await res.json();
+    if (res.ok) {
+      closeModal('formOverlay');
+      showToast(data.message, 'success');
+      loadStudents();
+      loadStats();
+    } else {
+      showToast(data.error, 'error');
+    }
+  }
+
+  function openDeleteModal(id, name) {
+    deleteTargetId = id;
+    document.getElementById('deleteNameLabel').textContent = name;
+    document.getElementById('deleteOverlay').classList.add('active');
+  }
+
+  async function confirmDelete() {
+    const res = await fetch(`/api/students/${deleteTargetId}`, { method: 'DELETE' });
+    const data = await res.json();
+    closeModal('deleteOverlay');
+    showToast(data.message, res.ok ? 'success' : 'error');
+    if (res.ok) { loadStudents(); loadStats(); }
+  }
+
+  function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+  function closeOnBackdrop(e, id) { if (e.target === document.getElementById(id)) closeModal(id); }
+
+  function showToast(msg, type='success') {
+    const el = document.createElement('div');
+    el.className = `toast ${type}`;
+    el.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">${type === 'success' ? '<polyline points="20 6 9 17 4 12"/>' : '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'}</svg> ${msg}`;
+    document.getElementById('toastContainer').appendChild(el);
+    setTimeout(() => el.remove(), 3500);
+  }
+
+  loadStats();
+  loadStudents();
+</script>
+</body>
+</html>
