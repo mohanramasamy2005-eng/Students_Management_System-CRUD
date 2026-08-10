@@ -8,7 +8,7 @@ dotenv.config({ path: path.join(__dirname, ".env") });
 
 const connectDB = require("./config/db");
 const studentRoutes = require("./routes/studentRoutes");
-const { notFound } = require("./middleware/notFound");
+const notFound = require("./middleware/notFound");
 const errorHandler = require("./middleware/errorHandler");
 
 const app = express();
