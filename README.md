@@ -52,7 +52,7 @@ MongoDB
 ## Folder Structure
 
 ```
-Students-Management-System/
+Students_Management_System-CRUD/
 │
 ├── client/                 # React + Vite frontend
 │   ├── public/
@@ -87,6 +87,10 @@ Students-Management-System/
 │   ├── package.json
 │   └── .env.example
 │
+├── students.db           # Legacy SQLite database file
+├── index.html            # Legacy frontend HTML (original single-page app)
+├── script.js             # Legacy frontend JS (original single-page app)
+├── style.css             # Legacy frontend CSS (original single-page app)
 ├── package.json            # Root (concurrently dev script)
 ├── README.md
 └── .gitignore
@@ -103,7 +107,7 @@ Students-Management-System/
 ### 1. Open the project
 
 ```bash
-cd Students-Management-System
+cd Students_Management_System-CRUD
 ```
 
 ### 2. Install client dependencies
