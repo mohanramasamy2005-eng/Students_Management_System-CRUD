@@ -1,10 +1,17 @@
+const dns = require("dns");
+
+// Use public DNS servers so MongoDB Atlas SRV records resolve correctly
+dns.setServers(["8.8.8.8", "1.1.1.1"]);
+
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const dotenv = require("dotenv");
 
 // Load environment variables
-dotenv.config({ path: path.join(__dirname, ".env") });
+dotenv.config({
+  path: path.join(__dirname, ".env"),
+});
 
 const connectDB = require("./config/db");
 const studentRoutes = require("./routes/studentRoutes");
@@ -14,13 +21,21 @@ const errorHandler = require("./middleware/errorHandler");
 const app = express();
 
 // CORS configuration
-const allowedOrigins = (process.env.CLIENT_URL || "http://localhost:5173")
-  .split(",")
-  .map((o) => o.trim());
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "http://localhost:5175",
+];
 
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   }),
@@ -30,7 +45,7 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Routes
+// Root API route
 app.get("/", (req, res) => {
   res.json({
     success: true,
@@ -45,6 +60,7 @@ app.get("/", (req, res) => {
   });
 });
 
+// Student routes
 app.use("/api/students", studentRoutes);
 
 // 404 handler
@@ -59,6 +75,7 @@ const PORT = process.env.PORT || 5000;
 const start = async () => {
   try {
     await connectDB();
+
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });

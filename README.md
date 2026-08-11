@@ -1,6 +1,11 @@
 # Student Management System
 
-A full-stack **MERN** (MongoDB, Express, React, Node.js) application for managing student records. It provides a complete CRUD interface with a sleek, dark dashboard-style UI, search/filter/sorting, statistics, and validation — migrated from the original HTML/CSS/JavaScript + SQLite application.
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)](https://nodejs.org/)
+[![Express](https://img.shields.io/badge/express-%3E%3D4.18-blue)](https://expressjs.com/)
+[![React](https://img.shields.io/badge/react-%3E%3D18.0-blue)](https://reactjs.org/)
+[![MongoDB](https://img.shields.io/badge/mongodb-%3E%3D4.0-green)](https://www.mongodb.com/)
+
+A production-ready full-stack **MERN** (MongoDB, Express, React, Node.js) Student Record Management System with complete CRUD functionality. This application was modernized from a legacy HTML/CSS/JS + SQLite single-page application to a scalable, enterprise-grade MERN architecture while preserving the original UI design, core functionality, and visual identity.
 
 ## Overview
 
@@ -151,6 +156,12 @@ VITE_API_URL=http://localhost:5000/api
 
 ### 6. Run migration (optional, to import existing SQLite data)
 
+From the project root:
+```bash
+npm run migrate
+```
+
+Or from the server directory:
 ```bash
 cd server
 npm run migrate
@@ -176,11 +187,18 @@ npm run dev
 
 The frontend runs on `http://localhost:5173`.
 
-> **Tip:** From the project root, you can run both simultaneously with:
+> **Tip:** From the project root, you can install all dependencies and run both servers simultaneously with:
 > ```bash
-> npm install         # installs concurrent (and run `npm run install:all` for client+server)
 > npm run install:all
 > npm run dev
+> ```
+> Or run them separately:
+> ```bash
+> # Terminal 1
+> npm run dev:server
+> 
+> # Terminal 2
+> npm run dev:client
 > ```
 
 ## API Endpoints
@@ -238,6 +256,12 @@ MongoDB collection: `students` (in the `student_management` database by default)
 
 The original application stored data in a SQLite database (`students.db`). To migrate that data into MongoDB:
 
+From the project root:
+```bash
+npm run migrate
+```
+
+Or from the server directory:
 ```bash
 cd server
 npm run migrate
@@ -255,14 +279,27 @@ The migration is **non-destructive** — it never deletes existing MongoDB data,
 
 ## Future Improvements
 
-- Add sorting on all table columns via clickable headers.
-- Add server-side pagination for large datasets.
-- Add authentication and role-based access control.
-- Add CSV/Excel export/import of student records.
-- Add more statistics and chart visualizations.
-- Improve accessibility (ARIA labels, keyboard navigation).
-- Add end-to-end tests and CI/CD pipeline.
+- Add server-side pagination for large datasets
+- Add authentication and role-based access control
+- Add CSV/Excel export/import of student records
+- Add interactive chart visualizations for student statistics
+- Improve accessibility (ARIA labels, keyboard navigation)
+- Add end-to-end testing suite and CI/CD pipeline
+- Add support for multiple academic years/semesters
+- Implement bulk student import/export functionality
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request or open an Issue for any bugs, feature requests, or improvements.
+
+## Support
+
+If you encounter any issues or need help with the application, please open an issue on the GitHub repository.
 
 ---
 
-*Built by Mohan Ramasamy.*
+*Maintained by Mohan Ramasamy*
