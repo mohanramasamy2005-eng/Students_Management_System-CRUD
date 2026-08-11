@@ -22,7 +22,8 @@ const app = express();
 
 // CORS configuration
 const allowedOrigins = [
-  process.env.CLIENT_URL,
+  ...((process.env.CLIENT_URL || "").split(",").map((origin) => origin.trim())),
+  "https://students-management-system-crud.vercel.app",
   "http://localhost:5173",
   "http://localhost:5174",
   "http://localhost:5175",
@@ -34,7 +35,9 @@ app.use(
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
-        callback(new Error("Not allowed by CORS"));
+        const error = new Error(`Not allowed by CORS: ${origin}`);
+        error.statusCode = 403;
+        callback(error);
       }
     },
     methods: ["GET", "POST", "PUT", "DELETE"],
