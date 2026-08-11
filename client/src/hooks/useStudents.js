@@ -5,6 +5,7 @@ import {
   updateStudent,
   deleteStudent,
   getApiErrorMessage,
+  logApiError,
 } from '../services/studentApi';
 
 /**
@@ -32,7 +33,7 @@ const useStudents = () => {
       const data = await getStudents(params);
       setStudents(data.data || []);
     } catch (err) {
-      console.error('Failed to load students from the API.', err);
+      logApiError('load students', err);
       const message = getApiErrorMessage(err);
       setError(message);
       setStudents([]);

@@ -55,4 +55,16 @@ export const getApiErrorMessage = (error) => {
   return error.message || 'An unexpected API error occurred.';
 };
 
+export const logApiError = (operation, error) => {
+  const baseUrl = (error.config?.baseURL || API_URL).replace(/\/+$/, '');
+  const path = (error.config?.url || '').replace(/^\/+/, '');
+
+  console.error(`Student API ${operation} failed.`, {
+    requestUrl: path ? `${baseUrl}/${path}` : baseUrl,
+    status: error.response?.status ?? null,
+    responseData: error.response?.data ?? null,
+    message: error.message,
+  });
+};
+
 export default api;

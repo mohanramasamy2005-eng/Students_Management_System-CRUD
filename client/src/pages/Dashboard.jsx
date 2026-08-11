@@ -8,7 +8,7 @@ import StudentTable from "../components/StudentTable";
 import StudentModal from "../components/StudentModal";
 import ConfirmDialog from "../components/ConfirmDialog";
 import Toast from "../components/Toast";
-import { getApiErrorMessage } from "../services/studentApi";
+import { getApiErrorMessage, logApiError } from "../services/studentApi";
 
 const icons = {
   total: {
@@ -94,7 +94,7 @@ const Dashboard = () => {
       }
       closeModal();
     } catch (err) {
-      console.error("Failed to save student through the API.", err);
+      logApiError("save student", err);
       const message = getApiErrorMessage(err);
       showToast(message, "error");
     }
@@ -107,7 +107,7 @@ const Dashboard = () => {
       showToast("Student deleted successfully", "success");
       setDeleteTarget(null);
     } catch (err) {
-      console.error("Failed to delete student through the API.", err);
+      logApiError("delete student", err);
       const message = getApiErrorMessage(err);
       showToast(message, "error");
       setDeleteTarget(null);
