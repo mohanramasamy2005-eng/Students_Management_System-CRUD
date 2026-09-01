@@ -14,7 +14,70 @@ export const DEPARTMENTS = [
 
 export const YEARS = [1, 2, 3, 4];
 
-export const validateStudent = (values) => {
+const normalizeDuplicateValue = (value) =>
+  String(value ?? "")
+    .trim()
+    .toLowerCase();
+
+const normalizePhoneForDuplicateCheck = (value) =>
+  String(value ?? "")
+    .replace(/[^\d]/g, "")
+    .trim();
+
+export const getDuplicateError = (
+  values,
+  students = [],
+  currentStudentId = null,
+) => {
+  const checks = [
+    {
+      key: "roll_no",
+      label: "Roll Number",
+      message:
+        "This roll number is already in use. Please enter a different roll number.",
+      normalize: (value) => normalizeDuplicateValue(value),
+    },
+    {
+      key: "email",
+      label: "Email",
+      message: "This email is already in use. Please enter a different email.",
+      normalize: (value) => normalizeDuplicateValue(value),
+    },
+    {
+      key: "phone",
+      label: "Phone",
+      message:
+        "This phone number is already in use. Please enter a different phone number.",
+      normalize: (value) => normalizePhoneForDuplicateCheck(value),
+    },
+  ];
+
+  for (const check of checks) {
+    const incoming = check.normalize(values[check.key]);
+    if (!incoming) continue;
+
+    const duplicateStudent = students.find((student) => {
+      if (currentStudentId && student._id === currentStudentId) return false;
+      const candidate = check.normalize(student[check.key]);
+      return candidate && candidate === incoming;
+    });
+
+    if (duplicateStudent) {
+      return {
+        field: check.key,
+        message: check.message,
+      };
+    }
+  }
+
+  return null;
+};
+
+export const validateStudent = (
+  values,
+  students = [],
+  currentStudentId = null,
+) => {
   const errors = {};
 
   // name
@@ -64,6 +127,11 @@ export const validateStudent = (values) => {
     if (Number.isNaN(cgpa) || cgpa < 0 || cgpa > 10) {
       errors.cgpa = "CGPA must be between 0 and 10";
     }
+  }
+
+  const duplicateError = getDuplicateError(values, students, currentStudentId);
+  if (duplicateError) {
+    errors[duplicateError.field] = duplicateError.message;
   }
 
   return errors;

@@ -1,5 +1,9 @@
 const mongoose = require("mongoose");
 const Student = require("../models/Student");
+const {
+  getDuplicateDetail,
+  buildDuplicateMessage,
+} = require("../utils/duplicateCheck");
 
 /**
  * @desc    Get all students (with optional search & department filter)
@@ -75,15 +79,31 @@ const createStudent = async (req, res, next) => {
   try {
     const { name, roll_no, department, year, email, phone, cgpa } = req.body;
 
-    // Explicit duplicate check for clearer 409 message
     const existing = await Student.findOne({
-      $or: [{ roll_no }, { email }],
+      $or: [
+        {
+          roll_no: {
+            $regex: `^${String(roll_no || "").trim()}$`,
+            $options: "i",
+          },
+        },
+        { email: { $regex: `^${String(email || "").trim()}$`, $options: "i" } },
+        { phone: { $regex: `^${String(phone || "").trim()}$`, $options: "i" } },
+      ],
     });
+
     if (existing) {
-      const field = existing.roll_no === roll_no ? "roll number" : "email";
+      const duplicate = getDuplicateDetail({ roll_no, email, phone }, existing);
+      const message = buildDuplicateMessage(
+        duplicate || {
+          field: "detail",
+          label: "Detail",
+        },
+      );
+
       return res.status(409).json({
         success: false,
-        message: `A student with that ${field} already exists`,
+        message,
       });
     }
 
@@ -127,16 +147,31 @@ const updateStudent = async (req, res, next) => {
 
     const { name, roll_no, department, year, email, phone, cgpa } = req.body;
 
-    // Duplicate check excluding self
     const dup = await Student.findOne({
-      $or: [{ roll_no }, { email }],
       _id: { $ne: id },
+      $or: [
+        {
+          roll_no: {
+            $regex: `^${String(roll_no || "").trim()}$`,
+            $options: "i",
+          },
+        },
+        { email: { $regex: `^${String(email || "").trim()}$`, $options: "i" } },
+        { phone: { $regex: `^${String(phone || "").trim()}$`, $options: "i" } },
+      ],
     });
     if (dup) {
-      const field = dup.roll_no === roll_no ? "roll number" : "email";
+      const duplicate = getDuplicateDetail({ roll_no, email, phone }, dup);
+      const message = buildDuplicateMessage(
+        duplicate || {
+          field: "detail",
+          label: "Detail",
+        },
+      );
+
       return res.status(409).json({
         success: false,
-        message: `A student with that ${field} already exists`,
+        message,
       });
     }
 

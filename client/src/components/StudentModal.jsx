@@ -14,7 +14,7 @@ const ModalCloseIcon = () => (
   </svg>
 );
 
-const StudentModal = ({ open, editing, onClose, onSubmit }) => {
+const StudentModal = ({ open, editing, students = [], onClose, onSubmit }) => {
   if (!open) return null;
 
   return (
@@ -28,6 +28,7 @@ const StudentModal = ({ open, editing, onClose, onSubmit }) => {
         </div>
         <StudentForm
           initialData={editing}
+          existingStudents={students}
           onSubmit={onSubmit}
           onCancel={onClose}
         />

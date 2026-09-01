@@ -172,6 +172,7 @@ const Dashboard = () => {
       <StudentModal
         open={modalOpen}
         editing={editing}
+        students={students}
         onClose={closeModal}
         onSubmit={handleSubmit}
       />

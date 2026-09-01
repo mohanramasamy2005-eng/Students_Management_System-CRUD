@@ -11,7 +11,12 @@ const EMPTY_FORM = {
   cgpa: "",
 };
 
-const StudentForm = ({ initialData, onSubmit, onCancel }) => {
+const StudentForm = ({
+  initialData,
+  onSubmit,
+  onCancel,
+  existingStudents = [],
+}) => {
   const [form, setForm] = useState(() => {
     if (initialData) {
       return {
@@ -43,7 +48,11 @@ const StudentForm = ({ initialData, onSubmit, onCancel }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const validationErrors = validateStudent(form);
+    const validationErrors = validateStudent(
+      form,
+      existingStudents,
+      initialData?._id || null,
+    );
     setErrors(validationErrors);
     if (Object.keys(validationErrors).length > 0) {
       return;
